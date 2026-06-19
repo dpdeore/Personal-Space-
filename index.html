@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE ULTIMATE CHALLENGE - For Hrushikesh</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-color: #161f33;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --gold-color: #f59e0b;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-color);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            margin: 20px 0;
+        }
+
+        .border-box {
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.2);
+            margin: 15px 0;
+        }
+
+        /* Progress Bars */
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--gold-color);
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .progress-track {
+            height: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold-color), #f97316);
+            width: 12%;
+            transition: width 0.4s ease;
+        }
+
+        /* Option buttons styling */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            padding: 14px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-btn:active {
+            transform: scale(0.98);
+        }
+
+        .option-btn.selected {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--accent-color);
+        }
+
+        /* Action Buttons */
+        .primary-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .primary-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Feedback UI */
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feedback.wrong {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--danger-color);
+            color: #fca5a5;
+            display: block;
+        }
+
+        .feedback.correct {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--success-color);
+            color: #6ee7b7;
+            display: block;
+        }
+
+        .achievement-banner {
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.2));
+            border-left: 4px solid var(--gold-color);
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+            display: none;
+        }
+
+        .husband-score {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        .score-bar {
+            width: 120px;
+            height: 8px;
+            background: #374151;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .score-fill {
+            height: 100%;
+            background: var(--danger-color);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        /* Loading Screen Bars */
+        .loading-container {
+            margin: 20px 0;
+        }
+        .loading-text {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .loading-track {
+            height: 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .loading-fill {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+        }
+
+        /* Checklist style */
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .check-item.active {
+            border-color: var(--accent-color);
+            background: rgba(59, 130, 246, 0.05);
+        }
+        .checkbox-box {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--text-muted);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .check-item.active .checkbox-box {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+
+        .center { text-align: center; }
+        .emoji-large { font-size: 2.5rem; margin-bottom: 10px; text-align: center; }
+        .accent-text { color: var(--accent-color); }
+        .gold-text { color: var(--gold-color); }
+        .success-text { color: var(--success-color); }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+
+        <!-- SCREEN 0: START VAULT -->
+        <div id="screen-start" class="screen active">
+            <div class="center">💎 <strong>THE ULTIMATE CHALLENGE</strong></div>
+            <h2 class="gold-text" style="margin-top: 5px;">For Hrushikesh</h2>
+            <div class="divider"></div>
+            
+            <div class="border-box" style="border-color: var(--danger-color);">
+                <div style="font-size:12px; color:var(--danger-color); font-weight:bold;">🔒 CLASSIFIED MISSION FILE</div>
+                <div style="font-size:11px; color:var(--text-muted);">ACCESS LEVEL: RESTRICTED</div>
+                <p style="margin-top:10px; font-size:14px; line-height: 1.5;">
+                    A highly secured reward has been locked.<br>
+                    Only <strong>ONE individual</strong> has the clearance to unlock it.
+                </p>
+            </div>
+
+            <p style="font-size: 14px; line-height: 1.6; margin: 15px 0;">
+                According to confidential intelligence reports…<br>
+                He is handsome.<br>
+                He is caring.<br>
+                He has a suspiciously strong love for non-veg. 🍗<br><br>
+                And his identity might just be… 🤔 <strong>Hrushikesh</strong>
+            </p>
+            
+            <div class="divider"></div>
+            <div style="font-size: 14px; margin-bottom: 25px; line-height: 1.4;">
+                <strong>Player:</strong> Hrushikesh<br>
+                <strong>Mission Architect:</strong> Dhanashree
+            </div>
+
+            <button class="primary-btn" onclick="nextScreen('screen-briefing')">🎮 [ ACCEPT CHALLENGE ]</button>
+        </div>
+
+        <!-- SCREEN 0.5: MISSION BRIEFING (NEW PAGE) -->
+        <div id="screen-briefing" class="screen">
+            <h3>🎮 MISSION BRIEFING</h3>
+            <div class="divider"></div>
+            
+            <p style="font-size: 15px; text-align: center; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+                Welcome, Hrushikesh.<br><br>A very special person has designed this mission exclusively for you.<br>Your objective is simple—yet meaningful:
+            </p>
+            
+            <p class="center gold-text" style="font-weight: bold; font-size: 16px; margin-bottom: 25px;">
+                Complete all levels. Unlock the final reward.
+            </p>
+
+            <div style="font-size: 14px; background: rgba(0,0,0,0.25); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 25px; line-height: 1.6;">
+                <strong style="color: var(--accent-color);">MISSION RULES:</strong><br>
+                • No skipping levels<br>
+                • Think before every choice<br>
+                • Each answer reveals part of the story<br>
+                • Final destination unlocks ONLY upon completion
+            </div>
+
+            <p class="center" style="color: var(--danger-color); font-weight: bold; font-size: 13px; margin-bottom: 25px;">
+                ⚠️ Failure is not recommended.
+            </p>
+
+            <button class="primary-btn" onclick="nextScreen('screen-l1')">START MISSION 🚀</button>
+        </div>
+
+        <!-- SCREEN 1: LEVEL 1 -->
+        <div id="screen-l1" class="screen">
+            <div class="progress-header"><span>📊 MISSION PROGRESS</span><span>12%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width: 12%;"></div></div>
+
+            <h3>🎯 LEVEL 1: INITIATION PROTOCOL</h3>
+            <p class="center" style="margin-bottom: 20px;">Before we proceed…<br>Are you ready to unlock the next chapter of our story?</p>
+
+            <div class="options-list">
+                <button class="option-btn" onclick="handleL1('yes')">⬜ YES ❤️</button>
+                <button class="option-btn" onclick="handleL1('def_yes')">⬜ DEFINITELY YES ❤️✨</button>
+                <button class="option-btn" onclick="handleL1('no')">⬜ Why is there no "NO" option? 😂</button>
+            </div>
+
+            <div id="l1-feedback" class="feedback"></div>
+            
+            <div id="l1-achievement" class="achievement-banner">
+                <span style="font-size: 12px; color: var(--gold-color); font-weight: bold;">✅ LEVEL CLEARED</span><br>
+                <strong>🏆 Achievement Unlocked: MISSION ACCEPTED</strong>
+            </div>
+
+            <button id="l1-next" class="primary-btn" style="display:none; margin-top: 15px;" onclick="nextScreen('screen-l2')">CONTINUE</button>
+        </div>
+
+        <!-- SCREEN 2: LEVEL 2 -->
+        <div id="screen-l2" class="screen">
+            <div class="progress-header"><span>📊 PROGRESS</span><span>25%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width: 25%;"></div></div>
+
+            <h3>🎯 LEVEL 2: MEMORY VAULT</h3>
+            <p class="center" style="margin-bottom: 15px; color: var(--text-muted);">Travel back to the day we first met…</p>
+            
+            <!-- Question 1 -->
+            <div id="l2-q1-container">
+                <p class="center" style="font-weight: 500; margin-bottom: 15px;">What was your first impression of me?</p>
+                <div class="options-list">
+                    <button class="option-btn" onclick="advanceL2Q2()">⬜ 😇 Such a decent person</button>
+                    <button class="option-btn" onclick="advanceL2Q2()">⬜ 😎 A little mysterious</button>
+                    <button class="option-btn" onclick="advanceL2Q2()">⬜ 😂 Quite funny</button>
+                    <button class="option-btn" onclick="advanceL2Q2()">⬜ 🤔 Let's see where this goes</button>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div id="l2-q2-container" style="display: none;">
+                <p class="center" style="font-weight: 500; margin-bottom: 15px;">Did you ever imagine we'd be here…<br>Planning forever together?</p>
+                <div class="options-list">
+                    <button class="option-btn" onclick="handleL2Final('yes')">⬜ ❤️ Yes</button>
+                    <button class="option-btn" onclick="handleL2Final('maybe')">⬜ 🤭 Maybe</button>
+                    <button class="option-btn" onclick="handleL2Final('wildest')">⬜ 😂 Not in my wildest dreams</button>
+                </div>
+            </div>
+
+            <div id="l2-feedback" class="feedback" style="margin-top:15px;"></div>
+
+            <div id="l2-achievement" class="achievement-banner">
+                <span style="font-size: 12px; color: var(--gold-color); font-weight: bold;">✅ LEVEL CLEARED</span><br>
+                <strong>🏆 Achievement Unlocked: MEMORY KEEPER</strong>
+            </div>
+
+            <button id="l2-next" class="primary-btn" style="display:none; margin-top: 15px;" onclick="nextScreen('screen-l3')">CONTINUE</button>
+        </div>
+
+        <!-- SCREEN 3: LEVEL 3 -->
+        <div id="screen-l3" class="screen">
+            <div class="progress-header"><span>📊 PROGRESS</span><span>40%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width: 40%;"></div></div>
+
+            <h3>🎯 LEVEL 3: LATE NIGHT CRISIS</h3>
+            
+            <div class="border-box" style="border-color: var(--danger-color); background: rgba(239, 68, 68, 0.03); text-align: center;">
+                <span style="color: var(--danger-color); font-weight: bold; letter-spacing: 1px;">🚨 EMERGENCY ALERT 🚨</span><br>
+                <span style="font-size: 13px; color: var(--text-muted)">Time: 23:30 Hours</span><br>
+                <p style="font-size: 16px; font-weight: bold; margin-top: 8px; color: #fca5a5;">"I want ice cream."</p>
+            </div>
+
+            <div id="husband-score-ui" class="husband-score" style="display:none;">
+                <span>💔 Future Husband Score Reduced</span>
+                <div class="score-bar"><div id="score-fill-bar" class="score-fill"></div></div>
+            </div>
+
+            <p class="center" style="margin-bottom: 15px;">Your response?</p>
+            <div class="options-list">
+                <button class="option-btn l3-opt" onclick="handleL3('wrong', this, '100%')">⬜ 🍦 Tell me to sleep</button>
+                <button class="option-btn l3-opt" onclick="handleL3('wrong', this, '70%')">⬜ 📱 Send a laughing emoji</button>
+                <button class="option-btn l3-opt" onclick="handleL3('wrong', this, '50%')">⬜ 🚗 Tell me we'll go tomorrow</button>
+                <button class="option-btn l3-opt" onclick="handleL3('correct', this, '100%')">⬜ ❤️ Ask which flavour and come with me</button>
+            </div>
+
+            <div id="l3-feedback" class="feedback"></div>
+
+            <div id="l3-achievement" class="achievement-banner">
+                <span style="font-size: 12px; color: var(--gold-color); font-weight: bold;">✅ Correct Answer</span><br>
+                <p style="font-size:14px; margin: 4px 0;">❤️ Ask which flavour and come with me</p>
+                <strong>🏆 Achievement Unlocked:<br>EMERGENCY ICE CREAM RESPONDER</strong>
+            </div>
+
+            <button id="l3-next" class="primary-btn" style="display:none; margin-top: 15px;" onclick="nextScreen('screen-l4')">CONTINUE</button>
+        </div>
+
+        <!-- SCREEN 4: LEVEL 4 -->
+        <div id="screen-l4" class="screen">
+            <div class="progress-header"><span>📊 PROGRESS</span><span>62%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width: 62%;"></div></div>
+
+            <h3>🎯 LEVEL 4: SACRIFICE PROTOCOL</h3>
+            
+            <div class="border-box" style="border-color: var(--gold-color); text-align: center; font-size:14px;">
+                ⚠️ <strong>WARNING:</strong><br>
+                This level has ended many relationships.<br>Choose carefully.
+            </div>
+
+            <p class="center" style="margin-bottom: 15px; font-weight: 500;">What do you like most?</p>
+            <div class="options-list">
+                <button class="option-btn l4-opt" onclick="handleL4(false, this)">⬜ 🍗 Chicken Biryani</button>
+                <button class="option-btn l4-opt" onclick="handleL4(false, this)">⬜ 🥟 Momos</button>
+                <button class="option-btn l4-opt" onclick="handleL4(false, this)">⬜ 🍖 Mutton</button>
+                <button class="option-btn l4-opt" onclick="handleL4(true, this)">⬜ ❤️ Me</button>
+            </div>
+
+            <div id="l4-feedback" class="feedback"></div>
+
+            <div id="l4-achievement" class="achievement-banner">
+                <span style="font-size: 12px; color: var(--gold-color); font-weight: bold;">✅ Correct Answer</span><br>
+                <p style="font-size: 14px; margin: 3px 0;">❤️ Me</p>
+                <strong>🏆 Achievement Unlocked: FUTURE HUSBAND MATERIAL</strong><br>
+                <span class="success-text">✨ +100 Girlfriend Points</span>
+            </div>
+
+            <button id="l4-next" class="primary-btn" style="display:none; margin-top: 15px;" onclick="nextScreen('screen-l5')">CONTINUE</button>
+        </div>
+
+        <!-- SCREEN 5: LEVEL 5 -->
+        <div id="screen-l5" class="screen">
+            <div class="progress-header"><span>📊 PROGRESS</span><span>75%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width: 75%;"></div></div>
+
+            <h3>🎯 LEVEL 5: TEAM US PROTOCOL</h3>
+            <p class="center" style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Life simulation initialized…</p>
+
+            <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; text-align: center; line-height: 1.6;">
+                Some days: Joy ☀️<br>
+                Some days: Chaos ⚡<br>
+                Some days: Silence 🌙<br>
+                Some days: Laughter 😂
+            </div>
+
+            <p class="center" style="font-weight: 500; margin-bottom: 15px;">What is our strategy?</p>
+            
+            <div class="check-item" onclick="toggleL5Check(this)">
+                <div class="checkbox-box"></div> <span>💪 Face everything together</span>
+            </div>
+            <div class="check-item" onclick="toggleL5Check(this)">
+                <div class="checkbox-box"></div> <span>😂 Make each other laugh</span>
+            </div>
+            <div class="check-item" onclick="toggleL5Check(this)">
+                <div class="checkbox-box"></div> <span>🤗 Never let one person fight alone</span>
+            </div>
+            <div class="check-item" onclick="toggleL5Check(this)">
+                <div class="checkbox-box"></div> <span>❤️ Choose each other every day</span>
+            </div>
+
+            <button class="primary-btn" style="margin-top:15px;" onclick="checkL5Answers()">SUBMIT STRATEGY</button>
+
+            <div id="l5-feedback" class="feedback"></div>
+
+            <div id="l5-achievement" class="achievement-banner">
+                <span style="font-size: 12px; color: var(--gold-color); font-weight: bold;">✅ LEVEL CLEARED</span><br>
+                <strong>🏆 Achievement Unlocked: TEAM FOREVER</strong>
+            </div>
+
+            <button id="l5-next" class="primary-btn" style="display:none; margin-top: 15px;" onclick="nextScreen('screen-l6')">CONTINUE</button>
+        </div>
+
+        <!-- SCREEN 6: LEVEL 6 -->
+        <div id="screen-l6" class="screen">
+            <div class="progress-header"><span>📊 PROGRESS</span><span>87%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width: 87%;"></div></div>
+
+            <h3>🎯 LEVEL 6: ENCRYPTED MESSAGE</h3>
+            <p class="center" style="color:var(--text-muted); font-size:14px; margin-bottom: 12px;">🔐 Decryption Required</p>
+
+            <div class="center" style="font-size: 22px; font-weight: bold; letter-spacing: 2px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px; line-height: 1.5;">
+                9<br>13 9 19 19<br>25 15 21
+            </div>
+
+            <div style="font-size: 14px; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+                <strong>Hint #1:</strong> A = 1<br>
+                <strong>Hint #2:</strong> I _ _ _ _ &nbsp; Y O U ❤️
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <input type="text" id="l6-input" placeholder="Type unlocked secret message..." style="flex: 1; padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white; font-size: 15px; text-transform: uppercase; text-align: center;">
+            </div>
+            <button class="primary-btn" onclick="checkL6()">DECRYPT</button>
+
+            <div id="l6-feedback" class="feedback"></div>
+
+            <div id="l6-achievement" class="achievement-banner">
+                <span style="font-size: 12px; color: var(--success-color); font-weight: bold;">🔓 DECODED MESSAGE</span><br>
+                <p style="font-size: 16px; font-weight: bold; margin: 4px 0; letter-spacing: 1px;">💌 I MISS YOU 💌</p>
+                <strong>🏆 Achievement Unlocked: MIND READER LEVEL 1</strong>
+            </div>
+
+            <button id="l6-next" class="primary-btn" style="display:none; margin-top: 15px;" onclick="nextScreen('screen-boss')">PROCEED TO FINAL LEVEL</button>
+        </div>
+
+        <!-- SCREEN 7: FINAL BOSS -->
+        <div id="screen-boss" class="screen">
+            <div class="progress-header"><span>📊 PROGRESS</span><span>100%</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width: 100%;"></div></div>
+
+            <h3>🎯 FINAL BOSS: EMOTIONAL CORE</h3>
+            <p class="center" style="margin-bottom: 20px; font-weight: 500;">Who is more excited to meet?</p>
+
+            <div class="options-list">
+                <button class="option-btn boss-opt" onclick="handleBoss(false, this)">⬜ 😌 You</button>
+                <button class="option-btn boss-opt" onclick="handleBoss(false, this)">⬜ 😎 Me</button>
+                <button class="option-btn boss-opt" onclick="handleBoss(true, this)">⬜ 😂 Both of us pretending to be calm</button>
+            </div>
+
+            <div id="boss-feedback" class="feedback"></div>
+
+            <div id="boss-achievement" class="achievement-banner">
+                <span style="font-size: 12px; color: var(--success-color); font-weight: bold;">✅ Correct Answer</span><br>
+                <p style="font-size:14px; margin: 4px 0;">😂 Both of us pretending to be calm</p>
+                <p style="font-size:13px; color: var(--text-muted); margin-bottom: 6px;">Because the truth is… Neither of us is actually calm. ❤️</p>
+                <strong>🏆 Achievement Unlocked: FINAL BOSS DEFEATED</strong>
+            </div>
+
+            <button id="boss-next" class="primary-btn" style="display:none; margin-top: 15px;" onclick="triggerFinalLoading()">🔓 UNLOCKING FINAL REWARD…</button>
+        </div>
+
+        <!-- SCREEN 8: SYSTEM LOADING -->
+        <div id="screen-loading" class="screen">
+            <h3 class="gold-text">INITIALIZING DECRYPTION</h3>
+            <div class="loading-container">
+                <div id="load-text" class="loading-text">Extracting Vault Files... 10%</div>
+                <div class="loading-track"><div id="load-fill-bar" class="loading-fill"></div></div>
+            </div>
+        </div>
+
+        <!-- SCREEN 9: MISSION COMPLETE BRIEF -->
+        <div id="screen-complete" class="screen">
+            <div class="emoji-large">🎉</div>
+            <h2 class="success-text">MISSION COMPLETE</h2>
+            <div class="divider"></div>
+            
+            <p class="center" style="color: var(--text-muted); margin-bottom: 15px;">Earned Titles:</p>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 25px;">
+                <div style="background: rgba(245, 158, 11, 0.08); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid rgba(245,158,11,0.2);">🏆 Heart Decoder</div>
+                <div style="background: rgba(245, 158, 11, 0.08); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid rgba(245,158,11,0.2);">🏆 Memory Master</div>
+                <div style="background: rgba(245, 158, 11, 0.08); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid rgba(245,158,11,0.2);">🏆 Secret Message Solver</div>
+                <div style="background: rgba(245, 158, 11, 0.08); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid rgba(245,158,11,0.2);">🏆 Dhanashree’s Favourite Person</div>
+            </div>
+
+            <button class="primary-btn" style="background: linear-gradient(135deg, #ec4899, #db2777); box-shadow: 0 4px 15px rgba(236,72,153,0.3);" onclick="nextScreen('screen-letter')">🔘 REVEAL FINAL SECRET ❤️</button>
+        </div>
+
+        <!-- SCREEN 10: SECRET LETTER -->
+        <div id="screen-letter" class="screen">
+            <div class="center" style="font-size:20px;">💌 <strong>SECRET LETTER</strong></div>
+            <div class="divider"></div>
+
+            <div style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); line-height: 1.6; font-size: 15px;">
+                <p>Dear Hrushikesh,</p><br>
+                <p>If you've reached this level, you already know this challenge was never about winning.</p><br>
+                <p>It was about…<br>Every small moment that made us smile.<br>Every conversation.<br>Every laugh.<br>Every memory.</p><br>
+                <p>I will cherish every moment we've shared and look forward to creating many more.</p><br>
+                <p>No matter where life takes us, some moments stay special forever.</p><br>
+                <p>And one thing I want you to know…</p><br>
+                <p class="center" style="font-size: 18px; color: #f43f5e; font-weight: bold;">❤️ I MISS YOU ❤️</p><br>
+                <p style="text-align: right; font-weight: bold; color: var(--gold-color);">— Dhanashree</p>
+            </div>
+
+            <div class="divider"></div>
+            <p class="center gold-text" style="font-weight: bold; margin-bottom: 15px;">✨ FINAL REWARD AWAITS ✨</p>
+            <button class="primary-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245,158,11,0.3);" onclick="nextScreen('screen-reward')">🔘 OPEN MY REWARD 🎁</button>
+        </div>
+
+        <!-- SCREEN 11: FINAL REWARD SCREEN -->
+        <div id="screen-reward" class="screen">
+            <div class="emoji-large">🎁</div>
+            <h3 class="gold-text">FINAL REWARD UNLOCKED</h3>
+            <div class="divider"></div>
+
+            <div class="center" style="font-size: 18px; font-weight: bold; color: #f43f5e; margin-bottom: 12px;">💍 SPECIAL INVITATION</div>
+            
+            <p style="font-size: 14px; line-height: 1.6; text-align: center; margin-bottom: 20px;">
+                Dear Hrushikesh,<br><br>
+                Thank you for completing this mission.<br>
+                Now it's time for the real destination…<br><br>
+                A moment that means a lot to me.<br>
+                And it would mean even more with you there.
+            </p>
+
+            <div class="border-box" style="border-color: var(--success-color); text-align: center; background: rgba(16,185,129,0.02);">
+                <div style="font-weight: bold; color: var(--success-color); font-size:15px; margin-bottom: 12px;">📍 VENUE UNLOCKED</div>
+                
+                <!-- NEW TIME AND DATE CONTENT -->
+                <div style="margin: 5px 0 15px 0; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1); font-size: 14px; text-align: left;">
+                    📅 <strong>Date:</strong> 21 June 2026<br>
+                    🕒 <strong>Time:</strong> 12:00 PM
+                </div>
+
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">🚩 Navigate below:</p>
+                <a href="https://maps.app.goo.gl/bUjfhSoKHKabz7VC7" target="_blank" class="primary-btn" style="background: #10b981; box-shadow: 0 4px 12px rgba(16,185,129,0.2);">OPEN MAP DIRECTIONS 🗺️</a>
+            </div>
+
+            <p class="center" style="font-size: 16px; font-weight: bold; margin: 20px 0;">❤️ See you there ❤️</p>
+            <p class="center" style="font-size: 14px;">With Love,<br><strong class="gold-text">Dhanashree ✨</strong></p>
+
+            <div class="divider"></div>
+            <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; color: var(--text-muted);">
+                <strong>Status:</strong> COMPLETED ✅<br>
+                <strong>Final Score:</strong> 100%<br>
+                <strong>Reward Earned:</strong> A Special Invitation 💌<br>
+                <strong>Unlocked By:</strong> Hrushikesh ❤️
+            </div>
+            
+            <p class="center" style="font-size: 12px; margin-top: 15px; color: var(--text-muted); font-weight: bold;">- Thank You For Playing -</p>
+        </div>
+
+    </div>
+
+    <script>
+        function nextScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function handleL1(choice) {
+            const fb = document.getElementById('l1-feedback');
+            const ach = document.getElementById('l1-achievement');
+            const nextBtn = document.getElementById('l1-next');
+            
+            if (choice === 'no') {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "❌ Wrong Choice<br>😢 Error 404<br>NO option not found.";
+                ach.style.display = "none";
+                nextBtn.style.display = "none";
+            } else {
+                fb.className = "feedback correct";
+                fb.innerHTML = "✅ Processing selection Protocol...";
+                setTimeout(() => {
+                    fb.style.display = "none";
+                    ach.style.display = "block";
+                    nextBtn.style.display = "block";
+                }, 600);
+            }
+        }
+
+        function advanceL2Q2() {
+            document.getElementById('l2-q1-container').style.display = 'none';
+            document.getElementById('l2-q2-container').style.display = 'block';
+        }
+
+        function handleL2Final(choice) {
+            const fb = document.getElementById('l2-feedback');
+            const ach = document.getElementById('l2-achievement');
+            const nextBtn = document.getElementById('l2-next');
+
+            if (choice === 'wildest') {
+                fb.className = "feedback correct";
+                fb.style.textAlign = "left";
+                fb.innerHTML = "😒 Excuse me?!<br>After all this?<br>Fine… I’ll allow it. 🤭❤️";
+            } else {
+                fb.className = "feedback correct";
+                fb.innerHTML = "❤️ Processing timeline sync successfully...";
+            }
+
+            setTimeout(() => {
+                ach.style.display = "block";
+                nextBtn.style.display = "block";
+            }, 1000);
+        }
+
+        function handleL3(type, btn, percentage) {
+            const fb = document.getElementById('l3-feedback');
+            const ach = document.getElementById('l3-achievement');
+            const nextBtn = document.getElementById('l3-next');
+            const scoreUi = document.getElementById('husband-score-ui');
+            const scoreFill = document.getElementById('score-fill-bar');
+
+            document.querySelectorAll('.l3-opt').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            if (type === 'wrong') {
+                scoreUi.style.display = 'flex';
+                scoreFill.style.width = percentage;
+                fb.className = "feedback wrong";
+                fb.innerHTML = "❌ Wrong Answer<br>🥺 Really? Try again.";
+                ach.style.display = "none";
+                nextBtn.style.display = "none";
+            } else {
+                scoreUi.style.display = 'none';
+                fb.style.display = 'none';
+                ach.style.display = "block";
+                nextBtn.style.display = "block";
+            }
+        }
+
+        function handleL4(isCorrect, btn) {
+            const fb = document.getElementById('l4-feedback');
+            const ach = document.getElementById('l4-achievement');
+            const nextBtn = document.getElementById('l4-next');
+
+            document.querySelectorAll('.l4-opt').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            if (!isCorrect) {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "❌ Bold option choice, but incorrect! Look deeper into your priorities. Try again! 😉";
+                ach.style.display = "none";
+                nextBtn.style.display = "none";
+            } else {
+                fb.style.display = "none";
+                ach.style.display = "block";
+                nextBtn.style.display = "block";
+            }
+        }
+
+        function toggleL5Check(element) {
+            element.classList.toggle('active');
+        }
+
+        function checkL5Answers() {
+            const fb = document.getElementById('l5-feedback');
+            const ach = document.getElementById('l5-achievement');
+            const nextBtn = document.getElementById('l5-next');
+            const items = document.querySelectorAll('.check-item');
+            
+            let allChecked = true;
+            items.forEach(item => {
+                if(!item.classList.contains('active')) allChecked = false;
+            });
+
+            if(!allChecked) {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "❌ Incomplete Answer Detected<br>Requirement: ☑ ALL OF THE ABOVE";
+                ach.style.display = "none";
+                nextBtn.style.display = "none";
+            } else {
+                fb.style.display = "none";
+                ach.style.display = "block";
+                nextBtn.style.display = "block";
+            }
+        }
+
+        function checkL6() {
+            const val = document.getElementById('l6-input').value.trim().toUpperCase();
+            const feedback = document.getElementById('l6-feedback');
+            const ach = document.getElementById('l6-achievement');
+            const nextBtn = document.getElementById('l6-next');
+
+            if (val === "I MISS YOU") {
+                feedback.style.display = "none";
+                ach.style.display = "block";
+                nextBtn.style.display = "block";
+            } else {
+                feedback.className = "feedback wrong";
+                feedback.innerHTML = "❌ Decryption Failed. Check hints, text configuration, and spacing.";
+                ach.style.display = "none";
+                nextBtn.style.display = "none";
+            }
+        }
+
+        function handleBoss(isCorrect, btn) {
+            const fb = document.getElementById('boss-feedback');
+            const ach = document.getElementById('boss-achievement');
+            const nextBtn = document.getElementById('boss-next');
+
+            document.querySelectorAll('.boss-opt').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            if(!isCorrect) {
+                fb.className = "feedback wrong";
+                fb.innerHTML = "❌ Denial mode active. Let's be completely honest here! Try again.";
+                ach.style.display = "none";
+                nextBtn.style.display = "none";
+            } else {
+                fb.style.display = "none";
+                ach.style.display = "block";
+                nextBtn.style.display = "block";
+            }
+        }
+
+        function triggerFinalLoading() {
+            nextScreen('screen-loading');
+            const fill = document.getElementById('load-fill-bar');
+            const txt = document.getElementById('load-text');
+            
+            const milestones = [
+                {p: 10, t: "Extracting Vault Files... 10%"},
+                {p: 30, t: "Decrypting Neural Core Data... 30%"},
+                {p: 50, t: "Validating Architect Credentials... 50%"},
+                {p: 70, t: "Reassembling Security Tokens... 70%"},
+                {p: 90, t: "Syncing Invitation Protocols... 90%"},
+                {p: 100, t: "ACCESS GRANTED! 100%"}
+            ];
+
+            milestones.forEach((m, idx) => {
+                setTimeout(() => {
+                    fill.style.width = m.p + "%";
+                    txt.innerText = m.t;
+                    if(idx === milestones.length - 1) {
+                        setTimeout(() => {
+                            nextScreen('screen-complete');
+                        }, 600);
+                    }
+                }, idx * 600);
+            });
+        }
+    </script>
+</body>
+</html>
